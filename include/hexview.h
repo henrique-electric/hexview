@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 //Colors
 #define RED_BOLD  "\033[1;31m"
