@@ -1,0 +1,78 @@
+#include "hexview.h"
+
+file_t *init_hexview(const char *file) {
+    if (file == NULL) {
+        perror("No file provided\n");
+        exit(1);
+    }
+    
+    // Alloc and check memory for the main file struct
+    file_t *new_file_struct = (file_t *) malloc(sizeof(file_t));
+    if (new_file_struct == NULL) {
+        perror("Error on allock file struct\n");
+        return NULL;
+    }
+
+    // Try to get the size of the file
+    new_file_struct->file_size = get_file_size(file);
+    if (new_file_struct->file_size == 0) {
+        perror("Error on get file size\n");
+        free(new_file_struct);
+        return NULL;
+    }
+
+    // Allocates memory for the buffer that will hold the program data
+    new_file_struct->buff     = (uint8_t *) malloc(new_file_struct->file_size);
+    if (new_file_struct->buff == NULL) {
+        perror("Error on alloc to buffer");
+        free(new_file_struct);
+        return NULL;
+    }
+
+    // Allocates a buffer to hold the name of the file
+    new_file_struct->file_name = (char *) malloc(strlen(file) + 1);
+    if (new_file_struct->file_name == NULL) {
+        perror("Failed to alloc memory for file_name buffer");
+        free(new_file_struct->buff);
+        free(new_file_struct);
+        return NULL;
+    }
+    strcpy(new_file_struct->file_name, file);
+
+    // Tries to open the file in read mode
+    new_file_struct->fd = fopen(file, "rb");
+    if (new_file_struct->fd == NULL) {
+        perror("Error on open file");
+        free(new_file_struct->buff);
+        free(new_file_struct);
+        exit(1);
+    }
+     
+    return new_file_struct;
+}
+
+// Close the file and free all the memory
+void close_hexview(file_t *file) {
+    if (file != NULL) {
+        if (file->fd != NULL) {
+            fclose(file->fd);
+        }
+        free(file->buff);
+        free(file);
+    }
+}
+
+// Gets the size of the file
+size_t get_file_size(const char *path) {
+    if (path == NULL) {
+        return 0;
+    }
+    
+    struct stat file_status;
+    if (stat(path, &file_status) != 0) {
+        perror("Error on get the size of the file");
+        return 0;
+    }
+
+    return (size_t) file_status.st_size;
+}
