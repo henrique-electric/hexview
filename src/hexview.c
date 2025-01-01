@@ -1,4 +1,4 @@
-#include "hexview.h"
+#include "../include/hexview.h"
 
 file_t *init_hexview(const char *file) {
     if (file == NULL) {
@@ -55,24 +55,27 @@ file_t *init_hexview(const char *file) {
 void close_hexview(file_t *file) {
     if (file != NULL) {
         if (file->fd != NULL) {
-            fclose(file->fd);
+            fclose(file->fd); // Close the file if pointer isn't NULL
         }
-        free(file->buff);
-        free(file);
+        free(file->buff);     // Free the buffer that holds the binary data
+        free(file);           // Free the struct itself
+        file = NULL;          // Set the pointer to the struct to NULL
     }
 }
 
-// Gets the size of the file
+// Using Linux syscall to get the attributes about the file that hexview will open and return the size
 size_t get_file_size(const char *path) {
     if (path == NULL) {
         return 0;
     }
     
-    struct stat file_status;
-    if (stat(path, &file_status) != 0) {
+    struct stat file_status; // Buffer to store the attributes
+    
+    // Invoking Syscall to get attributes
+    if (stat(path, &file_status) != 0) { 
         perror("Error on get the size of the file");
         return 0;
     }
 
-    return (size_t) file_status.st_size;
+    return (size_t) file_status.st_size; // return the casted type size
 }
