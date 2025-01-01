@@ -1,4 +1,4 @@
 all:
-	@gcc -c hexview.c
-	@gcc hexview.o main.c -o main
+	@gcc -s -c src/hexview.c
+	@gcc -s -O3 hexview.o src/main.c -o main
 	
