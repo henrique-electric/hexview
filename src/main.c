@@ -33,12 +33,21 @@ void print_content(const file_t *file) {
 void check_args(int argc, const char **argv) {
     if (argc < 2) {
         printf("How to use hexview \n ./hexview {file} -{args}\n");
+        exit(EXIT_FAILURE);
     }
     
+    int fd = open(argv[1], O_RDONLY);
+    if (fd == -1) {
+        fprintf(stderr, "File does not exist\n");
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd);
 }
 
 int main(int argc, const char *argv[]) {
-    file_t *fd = init_hexview("test");
+    check_args(argc, argv);
+    file_t *fd = init_hexview(argv[1]);
     fgets(fd->buff, fd->file_size, fd->fd);
     print_content(fd);
     close_hexview(fd);
