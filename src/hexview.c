@@ -2,21 +2,21 @@
 
 file_t *init_hexview(const char *file) {
     if (file == NULL) {
-        perror("No file provided\n");
+        fprintf(stderr, "No file provided\n");
         exit(1);
     }
     
     // Alloc and check memory for the main file struct
     file_t *new_file_struct = (file_t *) malloc(sizeof(file_t));
     if (new_file_struct == NULL) {
-        perror("Error on allock file struct\n");
+        fprintf(stderr, "Error on allock file struct\n");
         return NULL;
     }
 
     // Try to get the size of the file
     new_file_struct->file_size = get_file_size(file);
     if (new_file_struct->file_size == 0) {
-        perror("Error on get file size\n");
+        fprintf(stderr, "Error on get file size, aborting program\n");
         free(new_file_struct);
         return NULL;
     }
@@ -24,7 +24,7 @@ file_t *init_hexview(const char *file) {
     // Allocates memory for the buffer that will hold the program data
     new_file_struct->buff     = (uint8_t *) malloc(new_file_struct->file_size);
     if (new_file_struct->buff == NULL) {
-        perror("Error on alloc to buffer");
+        fprintf(stderr, "Error on alloc to buffer");
         free(new_file_struct);
         return NULL;
     }
@@ -32,7 +32,7 @@ file_t *init_hexview(const char *file) {
     // Allocates a buffer to hold the name of the file
     new_file_struct->file_name = (char *) malloc(strlen(file) + 1);
     if (new_file_struct->file_name == NULL) {
-        perror("Failed to alloc memory for file_name buffer");
+        fprintf(stderr, "Failed to alloc memory for file_name buffer");
         free(new_file_struct->buff);
         free(new_file_struct);
         return NULL;
@@ -42,10 +42,11 @@ file_t *init_hexview(const char *file) {
     // Tries to open the file in read mode
     new_file_struct->fd = fopen(file, "rb");
     if (new_file_struct->fd == NULL) {
-        perror("Error on open file");
+        fprintf(stderr, "File dont exist");
+        free(new_file_struct->file_name);
         free(new_file_struct->buff);
         free(new_file_struct);
-        exit(1);
+        return NULL;
     }
      
     return new_file_struct;
@@ -73,7 +74,7 @@ size_t get_file_size(const char *path) {
     
     // Invoking Syscall to get attributes
     if (stat(path, &file_status) != 0) { 
-        perror("Error on get the size of the file");
+        fprintf(stderr, "Error on get the size of the file");
         return 0;
     }
 
