@@ -16,16 +16,19 @@ void print_content(const file_t *file) {
     // Loop to print the content
     for (uint64_t counter = 0; counter <= file->file_size; counter++) {
 
+        if (counter % 2 == 0) {
+            printf(" ");
+        }
         /*
             Whenever the counter prints 8 segments of 2 bytes it break the line and print
             the nex value of data Ex: 00000000 -> 00000010
         */
-        if (counter % 8 == 0) {
+        if (counter % 16 == 0) {
             printf("\n");
-            printf("%08lx: ", counter * 2);
+            printf("%08lx: ", counter);
         }
     
-        printf(WHITE_BOLD "%04x " RESET_COLOR, __builtin_bswap16(file->buff[counter])); // Print with a white bold terminal color the data
+        printf(WHITE_BOLD "%02x" RESET_COLOR, file->buff[counter]); // Print with a white bold terminal color the data
     }
     printf("\n"); // Breaks a line to not mess with the shell
 }
