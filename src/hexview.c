@@ -22,7 +22,7 @@ file_t *init_hexview(const char *file) {
     }
 
     // Allocates memory for the buffer that will hold the program data
-    new_file_struct->buff     = (uint16_t *) malloc(new_file_struct->file_size);
+    new_file_struct->buff     = (uint8_t *) malloc(new_file_struct->file_size);
     if (new_file_struct->buff == NULL) {
         fprintf(stderr, "Error on alloc to buffer");
         free(new_file_struct);
@@ -40,8 +40,8 @@ file_t *init_hexview(const char *file) {
     strcpy(new_file_struct->file_name, file);
 
     // Tries to open the file in read mode
-    new_file_struct->fd = fopen(file, "rb");
-    if (new_file_struct->fd == NULL) {
+    new_file_struct->fd = open(file, O_RDONLY);
+    if (new_file_struct->fd < 0) {
         fprintf(stderr, "File dont exist");
         free(new_file_struct->file_name);
         free(new_file_struct->buff);
@@ -55,9 +55,7 @@ file_t *init_hexview(const char *file) {
 // Close the file and free all the memory
 void close_hexview(file_t *file) {
     if (file != NULL) {
-        if (file->fd != NULL) {
-            fclose(file->fd); // Close the file if pointer isn't NULL
-        }
+        close (file->fd);
         free(file->buff);     // Free the buffer that holds the binary data
         free(file);           // Free the struct itself
         file = NULL;          // Set the pointer to the struct to NULL

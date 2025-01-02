@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <inttypes.h>
+#include <ctype.h>
 
 //Colors
 #define RED_BOLD  "\033[1;31m"
@@ -24,8 +24,8 @@
 
 // Main file struct 
 typedef struct file {
-    FILE        *fd;             // pointer to the file that the program will open
-    uint16_t     *buff;          // A buffer to hold the data from the file
+    int        fd;             // pointer to the file that the program will open
+    uint8_t     *buff;          // A buffer to hold the data from the file
     char        *file_name;     // The path to the file that will be opened by the program
     size_t      file_size;      // The actual size of the file
 } file_t;

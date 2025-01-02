@@ -15,9 +15,9 @@ void print_content(const file_t *file) {
 
     // Loop to print the content
     for (uint64_t counter = 0; counter <= file->file_size; counter++) {
-
         if (counter % 2 == 0) {
             printf(" ");
+            
         }
         /*
             Whenever the counter prints 8 segments of 2 bytes it break the line and print
@@ -40,7 +40,7 @@ void check_args(int argc, const char **argv) {
     }
     
     int fd = open(argv[1], O_RDONLY);
-    if (fd == -1) {
+    if (fd < 0) {
         fprintf(stderr, "File does not exist\n");
         exit(EXIT_FAILURE);
     }
@@ -51,7 +51,7 @@ void check_args(int argc, const char **argv) {
 int main(int argc, const char *argv[]) {
     check_args(argc, argv);
     file_t *fd = init_hexview(argv[1]);
-    fgets((uint8_t*) fd->buff, fd->file_size, fd->fd);
+    read(fd->fd, fd->buff, fd->file_size);
     print_content(fd);
     close_hexview(fd);
     return 0;
