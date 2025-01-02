@@ -24,8 +24,8 @@ void print_content(const file_t *file) {
             printf("\n");
             printf("%08lx: ", counter * 2);
         }
-
-        printf(WHITE_BOLD "%02x%02x " RESET_COLOR, file->buff[counter], file->buff[counter + 1]); // Print with a white bold terminal color the data
+    
+        printf(WHITE_BOLD "%04x " RESET_COLOR, __builtin_bswap16(file->buff[counter])); // Print with a white bold terminal color the data
     }
     printf("\n"); // Breaks a line to not mess with the shell
 }
@@ -48,7 +48,7 @@ void check_args(int argc, const char **argv) {
 int main(int argc, const char *argv[]) {
     check_args(argc, argv);
     file_t *fd = init_hexview(argv[1]);
-    fgets(fd->buff, fd->file_size, fd->fd);
+    fgets((uint8_t*) fd->buff, fd->file_size, fd->fd);
     print_content(fd);
     close_hexview(fd);
     return 0;
