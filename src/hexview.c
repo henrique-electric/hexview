@@ -22,7 +22,7 @@ file_t *init_hexview(const char *file) {
     }
 
     // Allocates memory for the buffer that will hold the program data
-    new_file_struct->buff     = (uint8_t *) malloc(new_file_struct->file_size);
+    new_file_struct->buff     = (uint16_t *) malloc(new_file_struct->file_size);
     if (new_file_struct->buff == NULL) {
         fprintf(stderr, "Error on alloc to buffer");
         free(new_file_struct);
