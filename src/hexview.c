@@ -48,6 +48,8 @@ file_t *init_hexview(const char *file) {
         free(new_file_struct);
         return NULL;
     }
+
+    new_file_struct->file_type = analyze_file(new_file_struct);
      
     return new_file_struct;
 }
@@ -62,7 +64,25 @@ void close_hexview(file_t *file) {
     }
 }
 
-// Using Linux syscall to get the attributes about the file that hexview will open and return the size
+// Analyze the binary file header data and return the type of binary it is
+int analyze_file(const file_t *file) {
+    if (file == NULL) {
+        return -1; // returns error if file pointer is NULL for some reason
+    }
+
+    uint8_t header[4]; // The first 4 bytes from the header
+    for (int i = 0; i < 4; i++) {
+        header[i] = file->buff[i];
+    }
+
+    if (check_headers(header, mach_header) == true) {
+        return MACH_64;
+    }
+
+    return 0;
+}
+
+ // Using Linux syscall to get the attributes about the file that hexview will open and return the size
 size_t get_file_size(const char *path) {
     if (path == NULL) {
         return 0;
@@ -77,4 +97,19 @@ size_t get_file_size(const char *path) {
     }
 
     return (size_t) file_status.st_size; // return the casted type size
+}
+
+bool check_headers(const uint8_t *header1, const uint8_t *header2) {
+    if (header1 == NULL || header2 == NULL) {
+        return false;
+    }
+
+    // Check if all indexes from the headers match
+    for (uint8_t i = 0; i < 4; i++) {
+        if (header1[i] != header2[i]) {
+            return false;   // Breaks the loop if a single byte is different
+        }
+    }
+    
+    return true;
 }

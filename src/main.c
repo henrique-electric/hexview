@@ -1,13 +1,5 @@
 #include "../include/hexview.h"
 
-void read_file(file_t *file) {
-    if (file == NULL) {
-        return;
-    }
-
-    printf("%ld bytes read from %s\n", file->file_size, file->file_name);
-}
-
 void print_content(const file_t *file) {
     if (file == NULL) {
         return;
@@ -25,7 +17,7 @@ void print_content(const file_t *file) {
         */
         if (counter % 16 == 0) {
             printf("\n");
-            printf("%08lx: ", counter);
+            printf("%08llx: ", counter);
         }
     
         printf(WHITE_BOLD "%02x" RESET_COLOR, file->buff[counter]); // Print with a white bold terminal color the data
@@ -44,7 +36,6 @@ void check_args(int argc, const char **argv) {
         fprintf(stderr, "File does not exist\n");
         exit(EXIT_FAILURE);
     }
-
     close(fd);
 }
 
@@ -52,7 +43,8 @@ int main(int argc, const char *argv[]) {
     check_args(argc, argv);
     file_t *fd = init_hexview(argv[1]);
     read(fd->fd, fd->buff, fd->file_size);
-    print_content(fd);
+    analyze_file(fd);
+    //print_content(fd);
     close_hexview(fd);
     return 0;
 }
